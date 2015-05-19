@@ -100,11 +100,6 @@ kore_connection_accept(struct listener *l, struct connection **out)
 		return (KORE_RESULT_ERROR);
 	}
 
-#if !defined(KORE_BENCHMARK)
-	c->state = CONN_STATE_SSL_SHAKE;
-	c->write = net_write_ssl;
-	c->read = net_read_ssl;
-#else
 	c->state = CONN_STATE_ESTABLISHED;
 	c->proto = CONN_PROTO_HTTP;
 	c->write = net_write;
@@ -115,8 +110,6 @@ kore_connection_accept(struct listener *l, struct connection **out)
 
 	net_recv_queue(c, http_header_max, NETBUF_CALL_CB_ALWAYS,
 	    http_header_recv);
-#endif
-
 	kore_worker_connection_add(c);
 	kore_connection_start_idletimer(c);
 
